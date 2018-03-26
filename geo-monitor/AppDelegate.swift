@@ -10,11 +10,21 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
 
-
-
+    @objc func changeAppDisplay(_ sender: Any?) {
+        if (NSApp.isHidden) {
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            NSApp.hide(nil);
+        }
+    }
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+        if let button = statusItem.button {
+            button.image = #imageLiteral(resourceName: "insecure")
+            button.action = #selector(changeAppDisplay(_:))
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
