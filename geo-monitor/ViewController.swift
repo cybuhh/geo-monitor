@@ -6,23 +6,25 @@
 //  Copyright © 2018 cybuhh. All rights reserved.
 //
 
+// https://digitalleaves.com/complete-guide-networking-in-swift/
+
 import Cocoa
 
 func geoIP(forAddress address: String = "",
            cbFn: @escaping (_ error: Error?, _ result: NSDictionary?)->Void) {
     
     let urlStr = "https://freegeoip.net/json/\(address)"
-    let url = URL(string: urlStr)
-    let request = URLRequest(url: url!, cachePolicy: .useProtocolCachePolicy, timeoutInterval: TimeInterval(2))
+    let url = URL(string: urlStr)!
+    let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: TimeInterval(2))
     
-    /*let config = URLSessionConfiguration.default
-    config.timeoutIntervalForRequest = TimeInterval(15)
-    config.timeoutIntervalForResource = TimeInterval(15)
+    let config = URLSessionConfiguration.default
+    config.timeoutIntervalForRequest = TimeInterval(5)
+    config.timeoutIntervalForResource = TimeInterval(5)
+    
     let urlSession = URLSession(configuration: config)
-    */
-    //URLSession.shared.time
-    
-    let urlTask = URLSession.shared.dataTask(with: request) {(data, response, error) in
+
+    let dataTask = urlSession.dataTask(with: request) {
+        (data, response, error) in
         DispatchQueue.main.async {
             if (error != nil) {
                 return cbFn(error!, nil)
@@ -38,7 +40,9 @@ func geoIP(forAddress address: String = "",
 
         }
     }
-    urlTask.resume()
+    DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async(execute: {
+        dataTask.resume()
+    })
 }
 
 func getDnsIp() -> String {
