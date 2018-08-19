@@ -13,7 +13,7 @@ import Cocoa
 func geoIP(forAddress address: String = "",
            cbFn: @escaping (_ error: Error?, _ result: NSDictionary?)->Void) {
     
-    let urlStr = "https://freegeoip.net/json/\(address)"
+    let urlStr = "https://geoip.nekudo.com/api/\(address)"
     let url = URL(string: urlStr)!
     let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: TimeInterval(2))
     
@@ -97,7 +97,8 @@ class ViewController: NSViewController {
               cbFn: {(error, result) -> Void in
                 if (error == nil) {
                     self.location["ip"] = result?["ip"] as? String
-                    self.location["ip-geo"] = result?["country_code"] as? String
+                    let country = result?["country"] as? NSDictionary
+                    self.location["ip-geo"] = country?["code"] as? String
                 } else {
                     self.location["ip"] = ""
                     self.location["ip-geo"] = ""
@@ -106,7 +107,8 @@ class ViewController: NSViewController {
         geoIP(cbFn: {(error, result) -> Void in
             if (error == nil) {
                 self.location["dns"] = result?["ip"] as? String
-                self.location["dns-geo"] = result?["country_code"] as? String
+                let country = result?["country"] as? NSDictionary
+                self.location["dns-geo"] = country?["code"] as? String
             } else {
                 self.location["dns"] = ""
                 self.location["dns-geo"] = ""
